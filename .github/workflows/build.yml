@@ -23,4 +23,4 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: BrakeBench
-        path: src/BrakeBench/bin/x64/Release/
+        path: src/BrakeBench/bin/Release/
