@@ -19,9 +19,8 @@ jobs:
       run: |
         cd src
         dotnet build --configuration Release
-        cd bin/Release/netcoreapp3.0/
         
     - uses: actions/upload-artifact@master
       with:
         name: BrakeBench
-        path: src/BrakeBench/bin/x86/Release/
+        path: src/BrakeBench/bin/x64/Release/
