@@ -23,5 +23,5 @@ jobs:
         
     - uses: actions/upload-artifact@master
       with:
-        name: MetaBrake
-        path: src/BrakeBench/bin/Release/netcoreapp3.0/
+        name: BrakeBench
+        path: src/BrakeBench/bin/x86/Release/
