@@ -1,0 +1,27 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build_windows:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.0.100
+      
+    - name: Build
+      run: |
+        cd src
+        dotnet build --configuration Release
+        cd bin/Release/netcoreapp3.0/
+        
+    - uses: actions/upload-artifact@master
+      with:
+        name: MetaBrake
+        path: src/BrakeBench/bin/Release/netcoreapp3.0/
