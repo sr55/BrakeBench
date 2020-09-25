@@ -1,0 +1,21 @@
+[
+  {
+    "TaskId": 1,
+    "Name": "Standard Benchmark 1080p -> 720p x264",
+    "Description": "Emulating a user converting a high quality 1080p source to 720p for device playback and reduced filesize.",
+    "TaskType": 0,
+    "SourceFile": "bbb.mp4",
+    "CustomCommands": [
+      {
+        "CommandId": 1,
+        "Name": "Run 1",
+        "Command": "-i {source} -o {output_file} -e x264 -w 1280 --encoder-preset=ultrafast --no-deinterlace --no-decomb --stop-at seconds:10"
+      },
+      {
+        "CommandId": 2,
+        "Name": "Run 2",
+        "Command": "-i {source} -o {output_file} -e x264 -w 1280 --encoder-preset=ultrafast --no-deinterlace --no-decomb --stop-at seconds:10"
+      }
+    ]
+  }
+]
