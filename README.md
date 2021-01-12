@@ -10,7 +10,7 @@ A multi-platform benchmark and analysis tool for HandBrake
 
 * Place your source files in a folder called "sources" in the same directory as the BrakeBench Executable. 
 
-* Execute brakebench from hte command line:
+* Execute BrakeBench from the command line:
   * On Windows:  BrakeBench <TaskId>
   * On Linux:    ./BrakeBench <TaskId>
   * On macOS     ./BrakeBench <TaskId>
@@ -24,4 +24,4 @@ Please use the Issues tab above to report any issues or feature requests.
 
 ## License
 
-BrakeBench is relased under the [3-Clause BSD License](https://github.com/sr55/BrakeBench/blob/master/LICENSE) 
+BrakeBench is released under the [3-Clause BSD License](https://github.com/sr55/BrakeBench/blob/master/LICENSE) 
