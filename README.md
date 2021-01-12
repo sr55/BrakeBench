@@ -1,6 +1,11 @@
 # BrakeBench ![Build](https://github.com/sr55/BrakeBench/workflows/Build/badge.svg)
 A multi-platform benchmark and analysis tool for HandBrake
 
+Supports:
+- Records framerate and file size statistics 
+- Multi-run average calculations 
+- Ability to setup many different task profiles that can be executed by id.
+
 
 ## Usage
 
