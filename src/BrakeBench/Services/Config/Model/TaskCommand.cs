@@ -12,7 +12,9 @@ namespace BrakeBench.Services.Config.Model
     public class TaskCommand
     {
         public string Name { get; set; }
+
         public int CommandId { get; set; }
+
         public string Command { get; set; }
     }
 }

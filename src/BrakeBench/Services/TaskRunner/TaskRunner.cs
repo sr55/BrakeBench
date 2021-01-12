@@ -7,6 +7,7 @@
 namespace BrakeBench.Services.TaskRunner
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Text;
@@ -18,37 +19,65 @@ namespace BrakeBench.Services.TaskRunner
     using BrakeBench.Services.LogService.Interfaces;
     using BrakeBench.Services.LogService.Models;
     using BrakeBench.Services.TaskRunner.Interfaces;
+    using BrakeBench.Services.TaskRunner.Models;
 
     public class TaskRunner : ITaskRunner
     {
-        private ILogService logService = new LogService();
+        private static ILogService logService = new LogService();
+        private readonly object lockObject = new object();
 
-        public async void RunTaskSet(TaskSet task)
+        private bool isDone = false;
+
+        public async Task<List<CommandResult>> RunTaskSet(TaskItem task)
         {
-            Stopwatch watch = Stopwatch.StartNew();
+            List<CommandResult> results = new List<CommandResult>();
             ConsoleOutput.WriteLine(string.Format("Running Task: {0}", task.Name), ConsoleColor.Cyan);
             ConsoleOutput.WriteLine(string.Format(" - {0}", task.Description), ConsoleColor.Cyan);
             ConsoleOutput.WriteLine(string.Format(" - {0} command(s) to execute.", task.CustomCommands.Count), ConsoleColor.Cyan);
-            ConsoleOutput.WriteLine("-----------------------------------------------------", ConsoleColor.Cyan);
+            ConsoleOutput.WriteLine("-----------------------------------------------------");
 
             foreach (TaskCommand command in task.CustomCommands)
             {
+                Stopwatch watch = Stopwatch.StartNew();
+                this.isDone = false;
+
+                // Execute the run
+                CommandResult result = new CommandResult();
                 ConsoleOutput.WriteLine(string.Format("{2}{2} - Running Command {0} - {1}", command.CommandId, command.Name, Environment.NewLine), ConsoleColor.Cyan);
                 ConsoleOutput.WriteLine(string.Empty);
 
                 string commandString = this.PreProcessCommand(task, command);
-                StringBuilder result = await RunHandBrakeCli(commandString);
-                if (result != null)
+                StringBuilder logData = await this.RunHandBrakeCli(commandString);
+                watch.Stop();
+
+                // Gather the results of the run.
+                result.Log = logData.ToString();
+                ProcessedLog processedLog = logService.ProcessLog(logData);
+                processedLog.Command = command;
+                result.ProcessedLog = processedLog;
+
+                try
                 {
-                    ProcessedLog processedLog = this.logService.ProcessLog(result);
+                    string outputDirectory = Path.Combine("output", task.TaskId.ToString()); 
+                    string testFile = Path.Combine(outputDirectory, string.Format("{0}_{1}", command.CommandId, task.SourceFile));
+                    result.FileSizeBytes = new FileInfo(testFile).Length;
                 }
+                catch (Exception e)
+                {
+                    ConsoleOutput.WriteLine(e.ToString(), ConsoleColor.Red);
+                }
+
+                ConsoleOutput.WriteLine(string.Format("   {0} - Task Complete. Took: {1} seconds", command.CommandId, watch.ElapsedMilliseconds / 1000), ConsoleColor.Green);
+                result.ExecutionTime = watch.ElapsedMilliseconds / 1000;
+                result.TaskInfo = task;
+
+                results.Add(result);
             }
 
-            watch.Stop();
-            ConsoleOutput.WriteLine(string.Format("Task Complete. Took: {0} seconds", watch.ElapsedMilliseconds / 1000), ConsoleColor.Green);
+            return results;
         }
         
-        private static Task<StringBuilder> RunHandBrakeCli(string arguments)
+        private Task<StringBuilder> RunHandBrakeCli(string arguments)
         {
             var tcs = new TaskCompletionSource<StringBuilder>();
             StringBuilder logBuffer = new StringBuilder();
@@ -70,20 +99,30 @@ namespace BrakeBench.Services.TaskRunner
 
             process.Exited += (sender, args) =>
             {
-                watch.Stop();
-                tcs.SetResult(logBuffer);
-                process.Dispose();
+                lock (this.lockObject)
+                {
+                    Console.SetCursorPosition(0, Console.CursorTop);
+                    Console.WriteLine("   Done");
 
-                Console.SetCursorPosition(0, Console.CursorTop - 1);
-                ConsoleOutput.WriteLine(string.Format(" - Task Completed. Took {0} seconds", watch.ElapsedMilliseconds / 1000), ConsoleColor.Cyan);
+                    isDone = true;
+                    watch.Stop();
+                    tcs.SetResult(logBuffer);
+                    process.Dispose();
+                }
             };
 
             process.OutputDataReceived += (sender, args) =>
             {
-                if (!string.IsNullOrEmpty(args.Data))
+                lock (this.lockObject)
                 {
-                    Console.SetCursorPosition(0, Console.CursorTop - 1);
-                    Console.WriteLine(args.Data);
+                    if (!isDone)
+                    {
+                        if (!string.IsNullOrEmpty(args.Data))
+                        {
+                            Console.SetCursorPosition(0, Console.CursorTop - 1);
+                            Console.WriteLine("   " + args.Data);
+                        }
+                    }
                 }
             };
 
@@ -103,10 +142,9 @@ namespace BrakeBench.Services.TaskRunner
             return tcs.Task;
         }
 
-        private string PreProcessCommand(TaskSet taskset, TaskCommand command)
+        private string PreProcessCommand(TaskItem taskset, TaskCommand command)
         {
             string result = command.Command;
-            string sourceFileName = Path.GetFileNameWithoutExtension(taskset.SourceFile);
             string outputDirectory = Path.Combine("output", taskset.TaskId.ToString());
 
             if (!Directory.Exists(outputDirectory))

@@ -15,9 +15,9 @@ namespace BrakeBench.Services.Config.Interfaces
 
     public interface IConfigService
     {
-        List<TaskSet> GetConfig();
+        List<TaskItem> GetConfig();
 
-        TaskSet GetConfig(int task);
+        TaskItem GetConfig(int task);
 
         void LoadConfig();
 

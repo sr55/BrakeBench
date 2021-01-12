@@ -20,18 +20,18 @@ namespace BrakeBench.Services.Config
 
     public class ConfigService : IConfigService
     {
-        private readonly Dictionary<int, TaskSet> taskList = new Dictionary<int, TaskSet>();
+        private readonly Dictionary<int, TaskItem> taskList = new Dictionary<int, TaskItem>();
 
         public ConfigService()
         {
         }
 
-        public List<TaskSet> GetConfig()
+        public List<TaskItem> GetConfig()
         {
             return this.taskList.Values.ToList();
         }
 
-        public TaskSet GetConfig(int task)
+        public TaskItem GetConfig(int task)
         {
             if (this.taskList.ContainsKey(task))
             {
@@ -48,14 +48,16 @@ namespace BrakeBench.Services.Config
                 string tasks = reader.ReadToEnd();
                 if (!string.IsNullOrEmpty(tasks))
                 {
-                    List<TaskSet> jsonList = JsonConvert.DeserializeObject<List<TaskSet>>(tasks);
+                    Config config = JsonConvert.DeserializeObject<Config>(tasks);
                     if (this.taskList != null)
                     {
-                        foreach (TaskSet task in jsonList)
+                        foreach (TaskItem task in config.Tasks)
                         {
                             this.taskList.Add(task.TaskId, task);
                         }
                     }
+
+                    // TODO handle other config here.
                 }
             }
         }
@@ -64,8 +66,12 @@ namespace BrakeBench.Services.Config
         {
             using (StreamWriter writer = new StreamWriter("config.json"))
             {
+                Config config = new Config();
+                config.Tasks = new List<TaskItem>();
+                config.Tasks.Add(new TaskItem(){ CustomCommands = new List<TaskCommand>(), Description = "Desc"});
+
                 JsonSerializerSettings settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-                string json = JsonConvert.SerializeObject(this.taskList.Values.ToList(), Formatting.Indented, settings);
+                string json = JsonConvert.SerializeObject(config, Formatting.Indented, settings);
                 writer.Write(json);
             }
         }

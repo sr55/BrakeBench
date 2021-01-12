@@ -7,19 +7,25 @@
 namespace BrakeBench
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Threading.Tasks;
 
     using BrakeBench.Helpers;
     using BrakeBench.Services.Config;
     using BrakeBench.Services.Config.Interfaces;
     using BrakeBench.Services.Config.Model;
+    using BrakeBench.Services.Reporting;
+    using BrakeBench.Services.Reporting.Interfaces;
     using BrakeBench.Services.TaskRunner;
     using BrakeBench.Services.TaskRunner.Interfaces;
+    using BrakeBench.Services.TaskRunner.Models;
 
     public class Program
     {
         private static IConfigService configService = new ConfigService();
         private static ITaskRunner benchmarkService = new TaskRunner();
+        private static IReportService reportService = new ReportService();
 
         public static void Main(string[] args)
         {
@@ -37,7 +43,7 @@ namespace BrakeBench
                 ConsoleOutput.WriteLine(string.Empty);
                 ConsoleOutput.WriteLine("Available Task IDs are as follows: ");
 
-                foreach (TaskSet task in configService.GetConfig())
+                foreach (TaskItem task in configService.GetConfig())
                 {
                     ConsoleOutput.WriteLine(string.Format("   {0} - {1} ({2})", task.TaskId, task.Name, task.Description), ConsoleColor.White);
                 }
@@ -53,25 +59,37 @@ namespace BrakeBench
             }
 
             string command = args[0];
-            string firstArgument = args.Length > 1 ? args[1] : null;
-            string secondArgument = args.Length > 2 ? args[2] : null;
-            string thridArgument = args.Length > 3 ? args[3] : null;
-
+            
             int taskId = -1;
             if (!string.IsNullOrEmpty(command))
             {
                 int.TryParse(command, out taskId);
             }
 
-            //if (taskId < 0)
-            //{
-            //    ConsoleOutput.WriteLine("Please enter a valid task id. These are defined in the config.json file.");
-            //    Console.Read();
-            //    return;
-            //}
+            if (taskId < 0)
+            {
+                ConsoleOutput.WriteLine("Please enter a valid task id. These are defined in the config.json file.");
+                Console.Read();
+                return;
+            }
 
-            TaskSet taskset = configService.GetConfig(taskId);
-            benchmarkService.RunTaskSet(taskset);
+            TaskItem taskItem = configService.GetConfig(taskId);
+            Task<List<CommandResult>> results = benchmarkService.RunTaskSet(taskItem);
+            results.Wait();
+         
+            string csvFilename = string.Format("{0}.brakebench.csv", taskItem.TaskId);
+            string htmlFilename = string.Format("{0}.brakebench.html", taskItem.TaskId);
+
+            ConsoleOutput.WriteLine(string.Empty);
+            ConsoleOutput.WriteLine("-----------------------------------------------------");
+            ConsoleOutput.WriteLine("Generating Reports:", ConsoleColor.Cyan);
+
+            reportService.GenerateCSVReport(results.Result, csvFilename);
+            reportService.GenerateHTMLReport(results.Result, htmlFilename);
+
+            ConsoleOutput.WriteLine(string.Empty);
+            ConsoleOutput.WriteLine(string.Empty);
+            ConsoleOutput.WriteLine("Benchmark Complete. Press any key to exit.");
 
             Console.Read();
         }
@@ -86,6 +104,11 @@ namespace BrakeBench
             if (!Directory.Exists("output"))
             {
                 Directory.CreateDirectory("output");
+            }
+
+            if (!Directory.Exists("reports"))
+            {
+                Directory.CreateDirectory("reports");
             }
 
             configService.LoadConfig();

@@ -9,7 +9,7 @@
 
 namespace BrakeBench.Services.LogService.Models
 {
-    using System.Text;
+    using BrakeBench.Services.Config.Model;
 
     public class ProcessedLog
     {
@@ -17,9 +17,7 @@ namespace BrakeBench.Services.LogService.Models
         {
         }
 
-        public int TaskSetId { get; set; }
-
-        public StringBuilder RawLog { get; set; }
+        public TaskCommand Command { get; set; }
 
         public decimal? FPS { get; set; }
     }

@@ -51,8 +51,6 @@ namespace BrakeBench.Services.LogService
                 // "[20:34:59] mux: track 0, 38072 frames, 827826655 bytes, 10436.71 kbps, fifo 2048"
             }
 
-            logData.RawLog = logBuffer;
-
             return logData;
         }
 
