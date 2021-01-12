@@ -38,12 +38,12 @@ namespace BrakeBench.Services.Reporting
                         fpsList.Add(commandResult.ProcessedLog.FPS.Value);
                     }
 
-                    writer.WriteLine(string.Format("{0}, {1}, {2}", commandResult.TaskInfo.TaskId,  commandResult.ProcessedLog.FPS, commandResult.FileSizeBytes / 1024 / 1024));
+                    writer.WriteLine(string.Format("{0}, {1}, {2}", commandResult.TaskInfo.TaskId,  Math.Round(commandResult.ProcessedLog.FPS ?? 0, 2), commandResult.FileSizeBytes / 1024 / 1024));
                 }
 
                 // Averages
                 writer.WriteLine();
-                writer.WriteLine(string.Format("Average:, {0}", Enumerable.Average(fpsList)));
+                writer.WriteLine(string.Format("Average:, {0}", Math.Round(Enumerable.Average(fpsList), 2) ));
             }
         }
 

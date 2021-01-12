@@ -1,14 +1,14 @@
 {
   /* Maximum number of concurrent instances of HandBrakeCLI that can run*/
+  /* Currently maximum 1. Multi-instance is on the TODO list. */
   "Instances": 1,
-  
+
   /* A set of tasks that can be run. Either by ID, or all*/
   "Tasks": [
     {
       "TaskId": 1,
       "Name": "Standard Benchmark 1080p -> 720p x264",
       "Description": "Emulating a user converting a high quality 1080p source to 720p for device playback and reduced filesize.",
-      "TaskType": 0,
       "SourceFile": "bbb.mp4",
       "CustomCommands": [
         {
@@ -28,12 +28,10 @@
         }
       ]
     },
-
     {
       "TaskId": 2,
       "Name": "UHD Benchmark 4K -> 1080p x265",
       "Description": "Emulating a user converting a bluray to 1080p high quality for local computer playback.",
-      "TaskType": 0,
       "SourceFile": "bbb.mp4",
       "CustomCommands": [
         {
