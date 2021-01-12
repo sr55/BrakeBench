@@ -15,6 +15,8 @@ Supports:
 
 * Place your source files in a folder called "sources" in the same directory as the BrakeBench Executable. 
 
+* Place a copy of HandBrakeCLI into the in the same directory as the BrakeBench Executable. 
+
 * Execute BrakeBench from the command line:
   * On Windows:  BrakeBench <TaskId>
   * On Linux:    ./BrakeBench <TaskId>
