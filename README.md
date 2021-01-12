@@ -1,4 +1,4 @@
-# BrakeBench
+# BrakeBench ![Build](https://github.com/sr55/BrakeBench/workflows/Build/badge.svg)
 A multi-platform benchmark and analysis tool for HandBrake
 
 
