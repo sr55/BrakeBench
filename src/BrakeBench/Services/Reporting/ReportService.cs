@@ -12,12 +12,13 @@ namespace BrakeBench.Services.Reporting
     using System.Linq;
 
     using BrakeBench.Helpers;
+    using BrakeBench.Services.Config.Model;
     using BrakeBench.Services.Reporting.Interfaces;
     using BrakeBench.Services.TaskRunner.Models;
 
     public class ReportService : IReportService
     {
-        public void GenerateCSVReport(List<CommandResult> results, string filename)
+        public void GenerateCSVReport(TaskItem task, List<CommandResult> results, string filename)
         {
             ConsoleOutput.WriteLine(string.Format(" - Generating CSV Report ({0})", filename), ConsoleColor.Cyan);
 
@@ -26,9 +27,14 @@ namespace BrakeBench.Services.Reporting
             using (StreamWriter writer = new StreamWriter(filePath))
             {
                 List<decimal> fpsList = new List<decimal>();
-                
+
                 // Header
-                writer.WriteLine("Task ID, Average FPS, Filesize (MB)");
+                writer.WriteLine("Task ID:, " + task.TaskId);
+                writer.WriteLine("Task Name:, " + task.Name);
+                writer.WriteLine("Task Description:, " + task.Description);
+                writer.WriteLine();
+
+                writer.WriteLine("Task ID, Task Name, Average FPS, Filesize (MB)");
 
                 // Result Body
                 foreach (CommandResult commandResult in results)
@@ -38,7 +44,8 @@ namespace BrakeBench.Services.Reporting
                         fpsList.Add(commandResult.ProcessedLog.FPS.Value);
                     }
 
-                    writer.WriteLine(string.Format("{0}, {1}, {2}", commandResult.TaskInfo.TaskId,  Math.Round(commandResult.ProcessedLog.FPS ?? 0, 2), commandResult.FileSizeBytes / 1024 / 1024));
+                    decimal filesize = Math.Round((decimal)commandResult.FileSizeBytes / 1024 / 1024, 2);
+                    writer.WriteLine(string.Format("{0}, {1}, {2}, {3}", commandResult.ProcessedLog.Command.CommandId, commandResult.ProcessedLog.Command.Name,  Math.Round(commandResult.ProcessedLog.FPS ?? 0, 2), filesize));
                 }
 
                 // Averages
@@ -47,7 +54,7 @@ namespace BrakeBench.Services.Reporting
             }
         }
 
-        public void GenerateHTMLReport(List<CommandResult> results, string filename)
+        public void GenerateHTMLReport(TaskItem task, List<CommandResult> results, string filename)
         {
            // ConsoleOutput.WriteLine(string.Format(" - Generating HTML Report ({0})", filename), ConsoleColor.Cyan);
 

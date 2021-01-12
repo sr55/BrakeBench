@@ -32,7 +32,7 @@ namespace BrakeBench
             Init();
 
             ConsoleOutput.WriteLine("###################################", ConsoleColor.Yellow);
-            ConsoleOutput.WriteLine("BrakeBench 1.0 ", ConsoleColor.Yellow);
+            ConsoleOutput.WriteLine("   BrakeBench 1.0 ", ConsoleColor.Yellow);
             ConsoleOutput.WriteLine("###################################", ConsoleColor.Yellow);
 
             if (args.Length == 0)
@@ -84,8 +84,8 @@ namespace BrakeBench
             ConsoleOutput.WriteLine("-----------------------------------------------------");
             ConsoleOutput.WriteLine("Generating Reports:", ConsoleColor.Cyan);
 
-            reportService.GenerateCSVReport(results.Result, csvFilename);
-            reportService.GenerateHTMLReport(results.Result, htmlFilename);
+            reportService.GenerateCSVReport(taskItem, results.Result, csvFilename);
+            reportService.GenerateHTMLReport(taskItem, results.Result, htmlFilename);
 
             ConsoleOutput.WriteLine(string.Empty);
             ConsoleOutput.WriteLine(string.Empty);
@@ -109,6 +109,11 @@ namespace BrakeBench
             if (!Directory.Exists("reports"))
             {
                 Directory.CreateDirectory("reports");
+            }
+
+            if (!Directory.Exists("reports/logs"))
+            {
+                Directory.CreateDirectory("reports/logs");
             }
 
             configService.LoadConfig();

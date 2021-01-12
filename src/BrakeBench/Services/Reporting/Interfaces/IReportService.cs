@@ -8,12 +8,13 @@ namespace BrakeBench.Services.Reporting.Interfaces
 {
     using System.Collections.Generic;
 
+    using BrakeBench.Services.Config.Model;
     using BrakeBench.Services.TaskRunner.Models;
 
     public interface IReportService
     {
-        void GenerateCSVReport(List<CommandResult> result, string filename);
+        void GenerateCSVReport(TaskItem taskItem, List<CommandResult> result, string filename);
 
-        void GenerateHTMLReport(List<CommandResult> result, string filename);
+        void GenerateHTMLReport(TaskItem taskItem, List<CommandResult> result, string filename);
     }
 }

@@ -10,6 +10,8 @@ namespace BrakeBench.Services.TaskRunner
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Runtime.CompilerServices;
+    using System.Runtime.InteropServices.ComTypes;
     using System.Text;
     using System.Threading.Tasks;
 
@@ -44,7 +46,6 @@ namespace BrakeBench.Services.TaskRunner
                 // Execute the run
                 CommandResult result = new CommandResult();
                 ConsoleOutput.WriteLine(string.Format("{2}{2} - Running Command {0} - {1}", command.CommandId, command.Name, Environment.NewLine), ConsoleColor.Cyan);
-                ConsoleOutput.WriteLine(string.Empty);
 
                 string commandString = this.PreProcessCommand(task, command);
                 StringBuilder logData = await this.RunHandBrakeCli(commandString);
@@ -58,8 +59,7 @@ namespace BrakeBench.Services.TaskRunner
 
                 try
                 {
-                    string outputDirectory = Path.Combine("output", task.TaskId.ToString()); 
-                    string testFile = Path.Combine(outputDirectory, string.Format("{0}_{1}", command.CommandId, task.SourceFile));
+                    string testFile = Path.Combine("output", this.GetOutputFilename(command, task)); 
                     result.FileSizeBytes = new FileInfo(testFile).Length;
                 }
                 catch (Exception e)
@@ -67,7 +67,10 @@ namespace BrakeBench.Services.TaskRunner
                     ConsoleOutput.WriteLine(e.ToString(), ConsoleColor.Red);
                 }
 
-                ConsoleOutput.WriteLine(string.Format("   {0} - Task Complete. Took: {1} seconds", command.CommandId, watch.ElapsedMilliseconds / 1000), ConsoleColor.Green);
+                this.WriteLogData(result.Log, task, command);
+
+                decimal time = Math.Round((decimal)watch.ElapsedMilliseconds / 1000, 2);
+                ConsoleOutput.WriteLine(string.Format("   {0} - Task Complete. Took: {1} seconds", command.CommandId, time), ConsoleColor.Green);
                 result.ExecutionTime = watch.ElapsedMilliseconds / 1000;
                 result.TaskInfo = task;
 
@@ -101,7 +104,7 @@ namespace BrakeBench.Services.TaskRunner
             {
                 lock (this.lockObject)
                 {
-                    Console.SetCursorPosition(0, Console.CursorTop);
+                    ConsoleOutput.ClearLine();
                     Console.WriteLine("   Done");
 
                     isDone = true;
@@ -119,8 +122,8 @@ namespace BrakeBench.Services.TaskRunner
                     {
                         if (!string.IsNullOrEmpty(args.Data))
                         {
-                            Console.SetCursorPosition(0, Console.CursorTop - 1);
-                            Console.WriteLine("   " + args.Data);
+                            Console.SetCursorPosition(0, Console.CursorTop);
+                            Console.Write("   " + args.Data);
                         }
                     }
                 }
@@ -142,20 +145,35 @@ namespace BrakeBench.Services.TaskRunner
             return tcs.Task;
         }
 
-        private string PreProcessCommand(TaskItem taskset, TaskCommand command)
+        private string GetOutputFilename(TaskCommand command, TaskItem task)
+        {
+            return string.Format("{0}_{1}.{2}", task.TaskId, command.CommandId, task.SourceFile);
+        }
+        
+        private string PreProcessCommand(TaskItem task, TaskCommand command)
         {
             string result = command.Command;
-            string outputDirectory = Path.Combine("output", taskset.TaskId.ToString());
-
-            if (!Directory.Exists(outputDirectory))
-            {
-                Directory.CreateDirectory(outputDirectory);
-            }
-
-            result = result.Replace("{source}", string.Format("\"{0}\"", Path.Combine("sources", taskset.SourceFile)));
-            result = result.Replace("{output_file}", string.Format("\"{0}\"", Path.Combine(outputDirectory, string.Format("{0}_{1}", command.CommandId, taskset.SourceFile))));
+            
+            result = result.Replace("{source}", string.Format("\"{0}\"", Path.Combine("sources", task.SourceFile)));
+            result = result.Replace("{output_file}", Path.Combine("output", this.GetOutputFilename(command, task)));
 
             return result;
+        }
+
+        private void WriteLogData(string log, TaskItem task, TaskCommand command)
+        {
+            try
+            {
+                string filename = Path.Combine("reports/logs", this.GetOutputFilename(command, task) + ".log");
+                using (StreamWriter writer = new StreamWriter(filename))
+                {
+                    writer.WriteLine(log);
+                }
+            }
+            catch (Exception e)
+            {
+                ConsoleOutput.WriteLine(e.ToString(), ConsoleColor.Red);
+            }
         }
     }
 }

@@ -14,17 +14,17 @@
         {
           "CommandId": 1,
           "Name": "Run 1",
-          "Command": "-i {source} -o {output_file} -e x264 -w 1280 --encoder-preset=ultrafast --no-deinterlace --no-decomb --stop-at seconds:20"
+          "Command": "-i {source} -o {output_file} --preset=\"Fast 1080p30\" --no-deinterlace --no-decomb --stop-at seconds:20"
         },
         {
           "CommandId": 2,
           "Name": "Run 2",
-          "Command": "-i {source} -o {output_file} -e x264 -w 1280 --encoder-preset=ultrafast --no-deinterlace --no-decomb --stop-at seconds:20"
+          "Command": "-i {source} -o {output_file} --preset=\"Fast 1080p30\" --no-deinterlace --no-decomb --stop-at seconds:20"
         },
         {
           "CommandId": 3,
           "Name": "Run 3",
-          "Command": "-i {source} -o {output_file} -e x264 -w 1280 --encoder-preset=ultrafast --no-deinterlace --no-decomb --stop-at seconds:20"
+          "Command": "-i {source} -o {output_file} --preset=\"Fast 1080p30\" --no-deinterlace --no-decomb --stop-at seconds:20"
         }
       ]
     },
@@ -37,17 +37,17 @@
         {
           "CommandId": 1,
           "Name": "Run 1",
-          "Command": "-i {source} -o {output_file} -e x264 -w 1280 --encoder-preset=ultrafast --no-deinterlace --no-decomb --stop-at seconds:20"
+          "Command": "-i {source} -o {output_file} --preset=\"H.264 MKV 2160p60\" --no-deinterlace --no-decomb --stop-at seconds:20"
         },
         {
           "CommandId": 2,
           "Name": "Run 2",
-          "Command": "-i {source} -o {output_file} -e x264 -w 1280 --encoder-preset=ultrafast --no-deinterlace --no-decomb --stop-at seconds:20"
+          "Command": "-i {source} -o {output_file} --preset=\"H.264 MKV 2160p60\" --no-deinterlace --no-decomb --stop-at seconds:20"
         },
         {
           "CommandId": 3,
           "Name": "Run 3",
-          "Command": "-i {source} -o {output_file} -e x264 -w 1280 --encoder-preset=ultrafast --no-deinterlace --no-decomb --stop-at seconds:20"
+          "Command": "-i {source} -o {output_file} --preset=\"H.264 MKV 2160p60\" --no-deinterlace --no-decomb --stop-at seconds:20"
         }
       ]
     }
