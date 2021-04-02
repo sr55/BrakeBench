@@ -9,12 +9,33 @@
 
 namespace BrakeBench.Services.Config.Model
 {
+    using System.Threading;
+
     public class TaskCommand
     {
+        public TaskCommand()
+        {
+        }
+
+        public TaskCommand(TaskCommand command)
+        {
+            this.Name = command.Name;
+            this.Command = command.Command;
+            this.UsedQuality = command.UsedQuality;
+            this.QualityMax = command.QualityMax;
+            this.QualityMin = command.QualityMin;
+        }
+
+        public int AssignedId { get; set; }
+
         public string Name { get; set; }
 
-        public int CommandId { get; set; }
-
         public string Command { get; set; }
+
+        public int UsedQuality { get; set; }
+
+        public int QualityMin { get; set; }
+
+        public int QualityMax { get; set; }
     }
 }

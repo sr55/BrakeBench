@@ -10,44 +10,27 @@
       "Name": "Standard Benchmark 1080p -> 720p x264",
       "Description": "Emulating a user converting a high quality 1080p source to 720p for device playback and reduced filesize.",
       "SourceFile": "bbb.mp4",
+      "Mode": 0, /* Benchmark */
+      "Runs": 3, /* Number of times to run the command. Averages will be recorded. */ 
       "CustomCommands": [
         {
-          "CommandId": 1,
-          "Name": "Run 1",
-          "Command": "-i {source} -o {output_file} --preset=\"Fast 1080p30\" "
-        },
-        {
-          "CommandId": 2,
-          "Name": "Run 2",
-          "Command": "-i {source} -o {output_file} --preset=\"Fast 1080p30\" "
-        },
-        {
-          "CommandId": 3,
-          "Name": "Run 3",
-          "Command": "-i {source} -o {output_file} --preset=\"Fast 1080p30\" "
+          "Name": "Benchmark Run {0}",
+          "Command": "-i {source} -o {output_file} --preset=\"Very Fast 1080p30\" --stop-at seconds:60"
         }
       ]
     },
     {
       "TaskId": 2,
-      "Name": "UHD Benchmark 4K -> 1080p x264",
-      "Description": "Emulating a user converting a bluray to 1080p high quality for local computer playback.",
+      "Name": "Encoder Analysis: Quality Sweep.",
+      "Description": "Analyse the average bitrate for each quality value where everything else is constant. ",
       "SourceFile": "bbb.mp4",
+      "Mode": 1, /* Quality Sweep */
       "CustomCommands": [
         {
-          "CommandId": 1,
-          "Name": "Run 1",
-          "Command": "-i {source} -o {output_file} --preset=\"H.264 MKV 2160p60\" "
-        },
-        {
-          "CommandId": 2,
-          "Name": "Run 2",
-          "Command": "-i {source} -o {output_file} --preset=\"H.264 MKV 2160p60\" "
-        },
-        {
-          "CommandId": 3,
-          "Name": "Run 3",
-          "Command": "-i {source} -o {output_file} --preset=\"H.264 MKV 2160p60\" "
+          "Name": "Quality {0}",
+          "QualityMin": 49, /* Highest Quality Value */
+          "QualityMax": 51, /* Lowest Quality Value */
+          "Command": "-i {source} -o {output_file} -e x264 --encoder-preset=ultrafast -q {quality} --stop-at seconds:60"
         }
       ]
     }

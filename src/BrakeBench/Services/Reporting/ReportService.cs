@@ -20,6 +20,12 @@ namespace BrakeBench.Services.Reporting
     {
         public void GenerateCSVReport(TaskItem task, List<CommandResult> results, string filename)
         {
+            if (results.Count == 0)
+            {
+                ConsoleOutput.WriteLine("CSV Report: No Results to output", ConsoleColor.Red);
+                return;
+            }
+
             ConsoleOutput.WriteLine(string.Format(" - Generating CSV Report ({0})", filename), ConsoleColor.Cyan);
 
             string filePath = Path.Combine("reports", filename);
@@ -30,11 +36,11 @@ namespace BrakeBench.Services.Reporting
 
                 // Header
                 writer.WriteLine("Task ID:, " + task.TaskId);
-                writer.WriteLine("Task Name:, " + task.Name);
-                writer.WriteLine("Task Description:, " + task.Description);
+                writer.WriteLine("Name:, " + task.Name);
+                writer.WriteLine("Description:, " + task.Description);
                 writer.WriteLine();
 
-                writer.WriteLine("Task ID, Task Name, Average FPS, Filesize (MB)");
+                writer.WriteLine("Task Name, Average FPS, Filesize (MB), Video Avg Bitrate (kbps)");
 
                 // Result Body
                 foreach (CommandResult commandResult in results)
@@ -45,7 +51,7 @@ namespace BrakeBench.Services.Reporting
                     }
 
                     decimal filesize = Math.Round((decimal)commandResult.FileSizeBytes / 1024 / 1024, 2);
-                    writer.WriteLine(string.Format("{0}, {1}, {2}, {3}", commandResult.ProcessedLog.Command.CommandId, commandResult.ProcessedLog.Command.Name,  Math.Round(commandResult.ProcessedLog.FPS ?? 0, 2), filesize));
+                    writer.WriteLine(string.Format("{0}, {1}, {2}, {3}", commandResult.ProcessedLog.Command.Name,  Math.Round(commandResult.ProcessedLog.FPS ?? 0, 2), filesize, commandResult.ProcessedLog.VideoAvgBitrate));
                 }
 
                 // Averages

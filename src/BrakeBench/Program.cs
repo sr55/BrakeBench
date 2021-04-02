@@ -32,7 +32,7 @@ namespace BrakeBench
             Init();
 
             ConsoleOutput.WriteLine("###################################", ConsoleColor.Yellow);
-            ConsoleOutput.WriteLine("   BrakeBench 1.0 ", ConsoleColor.Yellow);
+            ConsoleOutput.WriteLine("  BrakeBench 1.1 ", ConsoleColor.Yellow);
             ConsoleOutput.WriteLine("###################################", ConsoleColor.Yellow);
 
             if (args.Length == 0)

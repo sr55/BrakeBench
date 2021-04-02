@@ -12,7 +12,6 @@ namespace BrakeBench.Services.Config.Model
     public enum TaskType
     {
         Benchmark,
-        EncoderAnalysis,
-        Custom
+        QualitySweep,
     }
 }

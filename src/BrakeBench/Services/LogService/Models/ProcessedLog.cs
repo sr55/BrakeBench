@@ -20,5 +20,7 @@ namespace BrakeBench.Services.LogService.Models
         public TaskCommand Command { get; set; }
 
         public decimal? FPS { get; set; }
+
+        public decimal? VideoAvgBitrate { get; set; }
     }
 }

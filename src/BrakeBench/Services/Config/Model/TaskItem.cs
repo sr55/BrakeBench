@@ -26,6 +26,10 @@ namespace BrakeBench.Services.Config.Model
 
         public string SourceFile { get; set; }
 
+        public TaskType Mode { get; set; }
+
+        public int Runs { get; set; }
+
         public List<TaskCommand> CustomCommands { get; set; }
     }
 }

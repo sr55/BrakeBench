@@ -41,14 +41,16 @@ namespace BrakeBench.Services.LogService
                     }
                 }
 
-                // TOOD Get the Muxed Track Results.
-                if (line.Contains("mux: track"))
+                // Video Track 
+                if (line.Contains("mux: track 0")) 
                 {
                     List<string> muxedTrack = GetResultRegex(@"track ([0-9.]*), ([0-9.]*) frames, ([0-9.]*) bytes, ([0-9.]*) kbps, fifo", line);
-                }
 
-                // "[20:34:59] work: average encoding speed for job is 191.556717 fps"
-                // "[20:34:59] mux: track 0, 38072 frames, 827826655 bytes, 10436.71 kbps, fifo 2048"
+                    if (muxedTrack.Count >= 5 && decimal.TryParse(muxedTrack[4], out decimal averageBitrate))
+                    {
+                        logData.VideoAvgBitrate = averageBitrate;
+                    }
+                }
             }
 
             return logData;
